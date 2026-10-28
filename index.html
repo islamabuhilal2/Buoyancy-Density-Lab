@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#062536">
+<title>مختبر الطفو والكثافة | تجربة تفاعلية</title>
+<style>
+:root { --deep:#061e2d;--panel:#0c3644;--stroke:#276a75;--mint:#6bf1d7;--muted:#a6cfcb;--peach:#ffa481;--white:#f0fffd; }
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;}body{color:var(--white);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;background:#061e2d url('assets/background_land.png') center / cover fixed;overflow-x:hidden}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--peach);outline-offset:3px}
+.shell{max-width:1640px;margin:0 auto;padding:24px clamp(15px,3vw,46px)}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:16px}
+.kicker{font-size:11px;letter-spacing:3px;color:var(--mint);font-weight:900;direction:ltr;text-align:right}
+h1{font-size:clamp(27px,3.0vw,43px);margin:5px 0 0;font-weight:850;letter-spacing:-.7px}header p{color:var(--muted);margin:4px 0 0;font-size:14px}
+.modebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.modebar button,.fluid{min-height:45px;padding:9px 20px;color:#d6eeed;border:1px solid #316674;background:#113f4e;border-radius:13px;font-weight:800;transition:background .15s,transform .15s}
+.modebar button[aria-pressed="true"],.fluid[aria-pressed="true"]{color:#062d36;background:#66e7ce;border-color:#b3fff0;box-shadow:0 8px 24px #42ead334}
+.modebar button:active,.fluid:active,.specimen:active{transform:scale(.97)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(345px,440px);gap:14px;align-items:stretch}
+.panel{border:1px solid #397c83;box-shadow:inset 0 1px 0 #cbfffd1c,0 12px 35px #0005;background:linear-gradient(145deg,#0a3647fa,#0c3441f6);border-radius:24px}
+.stage{min-height:565px;position:relative;overflow:hidden;padding:20px 20px 10px;display:flex;flex-direction:column;align-items:center}
+.mission{display:flex;align-items:center;justify-content:center;gap:12px;padding:11px 22px;border:1px solid #348d84;background:#13545c;border-radius:16px;color:#effff9;text-align:center;font-weight:800;font-size:clamp(13px,1.4vw,17px);min-height:52px;max-width:95%;z-index:8}
+.mission .star{color:var(--mint);font-size:20px}
+#success{display:none;font-size:14px;color:#77ffde;font-weight:900;text-align:center;margin:5px 0 0}#success.visible{display:block}
+.tank{position:relative;aspect-ratio:720 / 510;width:min(100%,730px);margin:auto 0;touch-action:none;user-select:none;-webkit-user-select:none}
+.tank-back,.tank-front{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.tank-back{z-index:1}.tank-front{z-index:4}
+.liquid-image{position:absolute;z-index:2;left:15.6%;top:29%;width:68.6%;height:59.1%;object-fit:fill;pointer-events:none}
+.inwater{position:absolute;left:49%;width:16%;height:auto;aspect-ratio:1;object-fit:contain;z-index:3;touch-action:none;cursor:grab;filter:drop-shadow(0 8px 7px #00283a9a)}.inwater.dragged{cursor:grabbing}
+.ripples{position:absolute;top:29%;left:19%;width:62%;height:15%;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,#c3fff442,transparent 70%);animation:drift 3s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(10px);opacity:.5}}
+.placeholder{position:absolute;z-index:2;left:25%;top:43%;width:50%;text-align:center;color:#b6e8e5;font-size:15px;line-height:1.8;pointer-events:none}
+.stage-bottom{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 12px 12px;gap:10px}.state{background:#145861;border:1px solid #43978a;border-radius:13px;padding:9px 20px;text-align:center;font-weight:900;white-space:nowrap}.reset{border:1px solid #648b92;border-radius:12px;background:#22505e;padding:10px 19px;color:white;font-weight:850}
+.sidebar{padding:20px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.section-title{margin:0 0 10px;font-weight:850;font-size:19px;color:#f1fffa}.section-sub{margin-top:-8px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.specimens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.specimen{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;border-radius:16px;border:1px solid #427f85;background:#154653;color:#f2fffa;min-height:135px;padding:7px 4px 9px;touch-action:none;user-select:none;cursor:grab}
+.specimen img{width:90px;max-width:100%;height:89px;object-fit:contain;pointer-events:none}.specimen strong{font-size:14px}.specimen[aria-pressed="true"]{border-color:#84ead7;background:#186c6e;box-shadow:inset 0 0 0 1px #6bdcca88}
+.fluids{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.fluid{padding:5px 1px;min-height:61px;display:flex;align-items:center;justify-content:center;gap:3px;font-size:14px;white-space:nowrap}.fluid img{width:31px;height:35px;object-fit:contain;pointer-events:none}
+.slider-group{margin-top:8px}.slider-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:15px;font-weight:800}.readnum{direction:ltr;color:var(--mint);font-family:Consolas,ui-monospace,monospace;font-size:16px}
+input[type=range]{display:block;width:100%;margin:13px 0 4px;accent-color:#6cf2d9;height:13px;cursor:pointer}
+.hint{font-size:12px;color:var(--muted);margin:7px 0 0;line-height:1.8}.lab-formula{border-top:1px solid #47798388;padding-top:12px;font-size:12px;color:#b6e4de;text-align:center;line-height:1.8}
+.metrics{margin-top:14px;padding:15px 16px 16px}.metrics h2{font-size:18px;margin:0 4px 12px}.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.stat{padding:12px 9px;background:#124353;border:1px solid #3c7380;border-radius:13px;text-align:center;min-width:0}.stat span{display:block;color:#cee8e5;font-size:12px;margin-bottom:5px}.stat strong{display:block;direction:ltr;font-size:clamp(14px,1.6vw,22px);font-weight:850;white-space:nowrap;color:#b7fff1}
+footer{font-size:12px;color:#91bbb8;text-align:center;padding:14px 0 0}
+.ghost{position:fixed;width:104px;height:104px;z-index:40;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 15px 12px #0009)}
+@media(max-width:1030px){header{align-items:center;flex-direction:column;text-align:center}.kicker{text-align:center}.main{grid-template-columns:1fr}.stage{min-height:425px}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:19px}.sidebar section:last-of-type{grid-column:span 2}.lab-formula{grid-column:span 2}.tank{max-width:660px;width:100%;}.stage-bottom{margin-top:-7px}}
+@media(max-width:620px){body{background-image:url('assets/background_port.png');background-size:100% 100%;background-attachment:fixed}.shell{padding:16px 11px}h1{font-size:28px}.modebar{justify-content:center;gap:6px}.modebar button{font-size:13px;padding:7px 10px;min-height:39px}.stage{padding:14px 5px 7px;min-height:auto}.mission{max-width:97%;min-height:46px;padding:7px 9px;font-size:12px}.tank{margin:6px auto -4px}.stage-bottom{margin-top:0;padding:0 10px 8px}.state,.reset{font-size:12px;padding:8px 10px}.sidebar{display:block;padding:14px}.sidebar section{margin-bottom:18px}.section-title{font-size:17px}.specimen{min-height:113px}.specimen img{height:75px;width:78px}.fluids{gap:4px}.fluid{font-size:11px;min-height:51px}.fluid img{width:22px;height:28px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stat:last-child{grid-column:span 2}.metrics{padding:12px}.stat strong{font-size:17px}}
+</style>
+</head><body>
+<div class="shell">
+  <header>
+    <div><div class="kicker">OCEAN LAB · INTERACTIVE SCIENCE</div><h1>مختبر الطفو والكثافة</h1><p>اسحب جسمًا إلى الماء، غيّر الخصائص، واكتشف قوة الطفو بنفسك</p></div>
+    <nav class="modebar" aria-label="أنماط التجربة">
+      <button type="button" data-mode="0" aria-pressed="true">استكشاف حر</button>
+      <button type="button" data-mode="1" aria-pressed="false">التحدي ١</button>
+      <button type="button" data-mode="2" aria-pressed="false">التحدي ٢</button>
+      <button type="button" data-mode="3" aria-pressed="false">التحدي ٣</button>
+    </nav>
+  </header>
+  <main>
+   <div class="main">
+    <section class="panel stage" aria-label="حوض تجربة الطفو">
+       <div class="mission"><span class="star">✦</span><span id="mission">اختر جسمًا واسحبه إلى الحوض، ثم جرّب السوائل المختلفة</span></div>
+       <div id="success" role="status">أحسنت! أنجزت التحدي بنجاح</div>
+       <div class="tank" id="tank">
+         <img class="tank-back" src="assets/tank_back.png" alt="" draggable="false">
+         <img class="liquid-image" id="liquidImg" src="assets/liquid_fresh.png" alt="" draggable="false">
+         <div class="ripples"></div>
+         <img class="inwater" id="specimenInTank" src="assets/object_wood.png" alt="جسم التجربة" draggable="false" hidden>
+         <div id="placeholder" class="placeholder">⬇<br>اسحب أحد الأجسام إلى الحوض</div>
+         <img class="tank-front" src="assets/tank_front.png" alt="" draggable="false">
+       </div>
+       <div class="stage-bottom"><span class="state" id="state">لم يوضع جسم بعد</span><button class="reset" id="reset">↻ إعادة التجربة</button></div>
+    </section>
+    <aside class="panel sidebar">
+      <section>
+        <h2 class="section-title">الأجسام الصلبة</h2><div class="section-sub">اسحب أي جسم إلى الحوض</div>
+        <div class="specimens">
+          <button class="specimen" data-specimen="0" aria-pressed="true"><img src="assets/object_wood.png" alt="" draggable="false"><strong>خشب</strong></button>
+          <button class="specimen" data-specimen="1" aria-pressed="false"><img src="assets/object_plastic.png" alt="" draggable="false"><strong>بلاستيك</strong></button>
+          <button class="specimen" data-specimen="2" aria-pressed="false"><img src="assets/object_metal.png" alt="" draggable="false"><strong>معدن</strong></button>
+        </div>
+      </section>
+      <section><h2 class="section-title">نوع السائل</h2><div class="fluids">
+         <button class="fluid" data-liquid="0" aria-pressed="true"><img src="assets/drop_fresh.png" alt="">ماء عذب</button>
+         <button class="fluid" data-liquid="1" aria-pressed="false"><img src="assets/drop_salt.png" alt="">ماء مالح</button>
+         <button class="fluid" data-liquid="2" aria-pressed="false"><img src="assets/drop_oil.png" alt="">زيت</button>
+      </div><p class="hint">الكثافة: ماء عذب 1000، ماء مالح 1200، زيت 850 كغم/م³</p></section>
+      <section><h2 class="section-title">خصائص الجسم</h2>
+        <div class="slider-group"><div class="slider-head"><label for="mass">الكتلة</label><output class="readnum" id="massRead">0.9 kg</output></div><input id="mass" type="range" min="0.2" max="3" step="0.1" value="0.9"></div>
+        <div class="slider-group"><div class="slider-head"><label for="volume">الحجم</label><output class="readnum" id="volRead">1.5 L</output></div><input id="volume" type="range" min="0.5" max="2.5" step="0.1" value="1.5"></div>
+        <p class="hint">غيّر الكتلة والحجم لتغيّر كثافة الجسم، واسحب الجسم خارج الحوض لإزالته.</p>
+      </section>
+      <div class="lab-formula">قوة الطفو = كثافة السائل × تسارع الجاذبية × الحجم المغمور<br>التجربة تستخدم كتلًا متجانسة وسائلًا مثاليًا عند السكون.</div>
+    </aside>
+   </div>
+   <section class="panel metrics" aria-label="نتائج التجربة">
+    <h2>قراءات المختبر الحيّة</h2>
+    <div class="stats">
+      <div class="stat"><span>كثافة الجسم</span><strong id="bodyDensity">600 kg/m³</strong></div>
+      <div class="stat"><span>كثافة السائل</span><strong id="fluidDensity">1000 kg/m³</strong></div>
+      <div class="stat"><span>وزن الجسم</span><strong id="weight">8.83 N</strong></div>
+      <div class="stat"><span>قوة الطفو</span><strong id="buoyancy">0.00 N</strong></div>
+      <div class="stat"><span>الحجم المزاح</span><strong id="displaced">0.00 L</strong></div>
+    </div>
+   </section>
+  </main>
+  <footer>تجربة علمية تعليمية باللغة العربية · تعمل على الهاتف والحاسوب دون اتصال بالإنترنت</footer>
+</div>
+<script>
+(()=>{'use strict';
+ const densities=[1000,1200,850],liquids=['fresh','salt','oil'],specimens=['wood','plastic','metal'];
+ const presets=[{m:.9,v:1.5},{m:1.05,v:1},{m:2.5,v:.5}];
+ let selected=0, liquid=0,mode=0, mass=.9,volume=1.5,dropped=false,drag=null;
+ const $=id=>document.getElementById(id), tank=$('tank'),object=$('specimenInTank');
+ const fmt=(n,d=2)=>Number(n).toFixed(d);
+ const getDensity=()=>mass*1000/volume;
+ const state=()=>Math.abs(getDensity()-densities[liquid])<=12?'neutral':getDensity()<densities[liquid]?'float':'sink';
+ const solution=()=>dropped&& (mode===1?selected===0&&liquid===0&&state()==='float':mode===2?selected===1&&liquid===1&&getDensity()>1000&&state()==='float':mode===3?liquid===0&&state()==='neutral':false);
+ function choose(i){selected=i;mass=presets[i].m;volume=presets[i].v;$('mass').value=mass;$('volume').value=volume;object.src='assets/object_'+specimens[i]+'.png';}
+ function reset(newMode=mode){mode=newMode;dropped=false;liquid=0;choose(mode===2?1:0);render();}
+ function updateObjectPosition(){if(!dropped)return;let h=object.offsetHeight||tank.clientWidth*.16,th=tank.clientHeight,top=th*.29,bottom=th*.881;
+   let frac=Math.min(1,getDensity()/densities[liquid]),y;
+   if(state()==='float')y=top-h*(1-frac)-8;
+   else if(state()==='neutral')y=top+(bottom-top)*.42-h*.5;
+   else y=bottom-h+2;
+   object.style.top=(y/th*100)+'%';
+ }
+ function render(){
+   document.querySelectorAll('[data-mode]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.mode==mode));
+   document.querySelectorAll('[data-specimen]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.specimen==selected));
+   document.querySelectorAll('[data-liquid]').forEach(el=>el.setAttribute('aria-pressed',el.dataset.liquid==liquid));
+   $('massRead').textContent=fmt(mass,1)+' kg';$('volRead').textContent=fmt(volume,1)+' L';
+   $('bodyDensity').textContent=fmt(getDensity(),0)+' kg/m³';$('fluidDensity').textContent=densities[liquid]+' kg/m³';
+   $('weight').textContent=fmt(mass*9.81)+' N';
+   let sub=dropped?volume*Math.min(1,getDensity()/densities[liquid]):0;
+   $('buoyancy').textContent=fmt(densities[liquid]*sub/1000*9.81)+' N';
+   $('displaced').textContent=fmt(sub)+' L';
+   $('liquidImg').src='assets/liquid_'+liquids[liquid]+'.png';
+   object.hidden=!dropped;$('placeholder').hidden=dropped;
+   let s=state(); $('state').textContent=!dropped?'لم يوضع جسم بعد':s==='float'?'الجسم يطفو':s==='neutral'?'الجسم متزن داخل السائل':'الجسم يغوص';
+   const missions=['اختر جسمًا واسحبه إلى الحوض، ثم جرّب السوائل المختلفة','اجعل الخشب يطفو في الماء العذب','اجعل البلاستيك يطفو في الماء المالح','اضبط الكتلة والحجم حتى يتزن الجسم داخل الماء العذب'];
+   $('mission').textContent=missions[mode];$('success').classList.toggle('visible',solution());
+   updateObjectPosition();
+ }
+ function insideTank(x,y){const r=tank.getBoundingClientRect();const rx=(x-r.left)/r.width,ry=(y-r.top)/r.height;return rx>.15&&rx<.85&&ry>.19&&ry<.91;}
+ function startDrag(e,i,fromTank){ if(e.button!==undefined&&e.button!==0)return;
+   e.preventDefault();if(drag)clearDrag();if(!fromTank)choose(i);
+   drag={fromTank,pointer:e.pointerId};const ghost=document.createElement('img');ghost.className='ghost';ghost.src='assets/object_'+specimens[selected]+'.png';ghost.alt='';document.body.appendChild(ghost);drag.ghost=ghost;
+   moveGhost(e); document.addEventListener('pointermove',moveGhost);document.addEventListener('pointerup',finishDrag);document.addEventListener('pointercancel',cancelDrag);render();
+ }
+ function moveGhost(e){if(!drag)return;drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px'}
+ function clearDrag(){if(!drag)return;drag.ghost.remove();drag=null;document.removeEventListener('pointermove',moveGhost);document.removeEventListener('pointerup',finishDrag);document.removeEventListener('pointercancel',cancelDrag)}
+ function finishDrag(e){if(!drag)return;const wasIn=drag.fromTank;const landed=insideTank(e.clientX,e.clientY);if(landed)dropped=true;else if(wasIn)dropped=false;clearDrag();render()}
+ function cancelDrag(){clearDrag();render()}
+ document.querySelectorAll('[data-specimen]').forEach(btn=>{
+  btn.addEventListener('pointerdown',e=>startDrag(e,Number(btn.dataset.specimen),false));
+  btn.addEventListener('click',()=>{ if(!drag){choose(Number(btn.dataset.specimen));render()} });
+ });
+ object.addEventListener('pointerdown',e=>startDrag(e,selected,true));
+ document.querySelectorAll('[data-liquid]').forEach(btn=>btn.addEventListener('click',()=>{liquid=Number(btn.dataset.liquid);render()}));
+ document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>reset(Number(btn.dataset.mode))));
+ $('reset').addEventListener('click',()=>reset());
+ $('mass').addEventListener('input',e=>{mass=Number(e.target.value);render()});
+ $('volume').addEventListener('input',e=>{volume=Number(e.target.value);render()});
+ addEventListener('resize',updateObjectPosition);
+ render();
+})();
+</script></body></html>
